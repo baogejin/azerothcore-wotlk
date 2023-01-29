@@ -110,7 +110,7 @@ UpdateFetcher::DirectoryStorage UpdateFetcher::ReceiveIncludedDirectories() cons
     {
         for (auto const& itr : *_setDirectories)
         {
-            std::string path = _sourceDirectory->generic_string() + itr;
+            std::string path = "." + itr;
 
             Path const p(path);
             if (!is_directory(p))
@@ -135,7 +135,7 @@ UpdateFetcher::DirectoryStorage UpdateFetcher::ReceiveIncludedDirectories() cons
             std::string path  = fields[0].Get<std::string>();
             std::string state = fields[1].Get<std::string>();
             if (path.substr(0, 1) == "$")
-                path = _sourceDirectory->generic_string() + path.substr(1);
+                path = "." + path.substr(1);
 
             Path const p(path);
 
@@ -162,7 +162,7 @@ UpdateFetcher::DirectoryStorage UpdateFetcher::ReceiveIncludedDirectories() cons
         // data/sql
         for (auto const& itr : moduleList)
         {
-            std::string path = _sourceDirectory->generic_string() + "/modules/" + itr + "/data/sql/" + _dbModuleName; // modules/mod-name/data/sql/db-world
+            std::string path = "./modules/" + itr + "/data/sql/" + _dbModuleName; // modules/mod-name/data/sql/db-world
 
             Path const p(path);
             if (!is_directory(p))
