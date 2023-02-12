@@ -92,7 +92,8 @@ public:
         EVADE_REASON_OTHER
     };
 
-    void Talk(uint8 id, WorldObject const* whisperTarget = nullptr);
+    void Talk(uint8 id, WorldObject const* whisperTarget = nullptr, Milliseconds delay = 0s);
+    void Talk(uint8 id, Milliseconds delay) { Talk(id, nullptr, delay); }
 
     explicit CreatureAI(Creature* creature) : UnitAI(creature), me(creature), _boundary(nullptr), _negateBoundary(false), m_MoveInLineOfSight_locked(false) { }
 
@@ -126,7 +127,7 @@ public:
 
     // Called when the creature summon successfully other creature
     virtual void JustSummoned(Creature* /*summon*/) {}
-    virtual void IsSummonedBy(Unit* /*summoner*/) {}
+    virtual void IsSummonedBy(WorldObject* /*summoner*/) {}
 
     virtual void SummonedCreatureDespawn(Creature* /*summon*/) {}
     virtual void SummonedCreatureDies(Creature* /*summon*/, Unit* /*killer*/) {}

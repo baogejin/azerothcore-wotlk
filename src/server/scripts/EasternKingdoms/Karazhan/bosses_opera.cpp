@@ -201,6 +201,7 @@ public:
                 if (AggroTimer <= diff)
                 {
                     me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetImmuneToPC(false);
                     AggroTimer = 0;
                 }
                 else
@@ -400,6 +401,7 @@ public:
                 if (AggroTimer <= diff)
                 {
                     me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetImmuneToPC(false);
                     AggroTimer = 0;
                 }
                 else
@@ -512,6 +514,7 @@ public:
                 if (AggroTimer <= diff)
                 {
                     me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetImmuneToPC(false);
                     AggroTimer = 0;
                 }
                 else
@@ -626,6 +629,7 @@ public:
                 if (AggroTimer <= diff)
                 {
                     me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+                    me->SetImmuneToPC(false);
                     AggroTimer = 0;
                 }
                 else
@@ -707,6 +711,13 @@ public:
         {
             Talk(SAY_CRONE_AGGRO);
             DoZoneInCombat();
+        }
+
+        void EnterEvadeMode(EvadeReason reason) override
+        {
+            ScriptedAI::EnterEvadeMode(reason);
+
+            instance->SetBossState(DATA_OPERA_PERFORMANCE, FAIL);
         }
 
         void JustDied(Unit* /*killer*/) override
@@ -889,6 +900,13 @@ public:
         void JustReachedHome() override
         {
             me->DespawnOrUnsummon();
+        }
+
+        void EnterEvadeMode(EvadeReason reason) override
+        {
+            ScriptedAI::EnterEvadeMode(reason);
+
+            instance->SetBossState(DATA_OPERA_PERFORMANCE, FAIL);
         }
 
         void JustDied(Unit* /*killer*/) override
@@ -1138,6 +1156,13 @@ public:
 
         void DamageTaken(Unit*, uint32& damage, DamageEffectType, SpellSchoolMask) override;
 
+        void EnterEvadeMode(EvadeReason reason) override
+        {
+            ScriptedAI::EnterEvadeMode(reason);
+
+            instance->SetBossState(DATA_OPERA_PERFORMANCE, FAIL);
+        }
+
         void JustDied(Unit*) override
         {
             Talk(SAY_JULIANNE_DEATH02);
@@ -1285,6 +1310,13 @@ public:
                 return;
 
             ScriptedAI::MoveInLineOfSight(who);
+        }
+
+        void EnterEvadeMode(EvadeReason reason) override
+        {
+            ScriptedAI::EnterEvadeMode(reason);
+
+            instance->SetBossState(DATA_OPERA_PERFORMANCE, FAIL);
         }
 
         void JustDied(Unit* /*killer*/) override

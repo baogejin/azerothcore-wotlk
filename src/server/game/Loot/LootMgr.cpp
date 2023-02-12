@@ -414,12 +414,13 @@ bool LootItem::AllowedForPlayer(Player const* player, ObjectGuid source) const
     }
 
     bool isMasterLooter = player->GetGroup() && player->GetGroup()->GetMasterLooterGuid() == player->GetGUID();
+    bool itemVisibleForMasterLooter = !needs_quest && (!follow_loot_rules || !is_underthreshold);
 
     // DB conditions check
     if (!sConditionMgr->IsObjectMeetToConditions(const_cast<Player*>(player), conditions))
     {
         // Master Looter can see conditioned recipes
-        if (isMasterLooter && (!follow_loot_rules || !is_underthreshold))
+        if (isMasterLooter && itemVisibleForMasterLooter)
         {
             if ((pProto->Flags & ITEM_FLAG_HIDE_UNUSABLE_RECIPE) || (pProto->Class == ITEM_CLASS_RECIPE && pProto->Bonding == BIND_WHEN_PICKED_UP && pProto->Spells[1].SpellId != 0))
             {
@@ -442,7 +443,7 @@ bool LootItem::AllowedForPlayer(Player const* player, ObjectGuid source) const
     }
 
     // Master looter can see all items even if the character can't loot them
-    if (isMasterLooter && (!follow_loot_rules || !is_underthreshold))
+    if (isMasterLooter && itemVisibleForMasterLooter)
     {
         return true;
     }
@@ -1456,7 +1457,7 @@ float LootTemplate::LootGroup::TotalChance() const
 void LootTemplate::LootGroup::Verify(LootStore const& lootstore, uint32 id, uint8 group_id) const
 {
     float chance = RawTotalChance();
-    if (chance > 101.0f)                                    // TODO: replace with 100% when DBs will be ready
+    if (chance > 101.0f)                                    /// @todo: replace with 100% when DBs will be ready
     {
         LOG_ERROR("sql.sql", "Table '{}' entry {} group {} has total chance > 100% ({})", lootstore.GetName(), id, group_id, chance);
     }
@@ -1806,7 +1807,7 @@ void LootTemplate::Verify(LootStore const& lootstore, uint32 id) const
         if (Groups[i])
             Groups[i]->Verify(lootstore, id, i + 1);
 
-    // TODO: References validity checks
+    /// @todo: References validity checks
 }
 
 void LootTemplate::CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_set) const

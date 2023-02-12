@@ -56,7 +56,7 @@ EndContentData */
 #include "WaypointMgr.h"
 #include "World.h"
 
-// TODO: this import is not necessary for compilation and marked as unused by the IDE
+// @todo: this import is not necessary for compilation and marked as unused by the IDE
 //  however, for some reasons removing it would cause a damn linking issue
 //  there is probably some underlying problem with imports which should properly addressed
 //  see: https://github.com/azerothcore/azerothcore-wotlk/issues/9766
@@ -444,7 +444,7 @@ public:
             {
                 me->SetLootRecipient(me->GetOwner());
                 me->LowerPlayerDamageReq(me->GetMaxHealth());
-                Unit::Kill(me, me);
+                me->KillSelf();
                 deathTimer = 600000;
             }
             else
@@ -840,7 +840,10 @@ public:
                         break;
                     case TEXT_EMOTE_DANCE:
                         if (!player->HasAura(SPELL_SEDUCTION))
+                        {
+                            player->RemoveAurasByType(SPELL_AURA_MOUNTED);
                             DoCast(player, SPELL_SEDUCTION, true);
+                        }
                         break;
                 }
             }
@@ -2518,7 +2521,7 @@ public:
     {
         npc_venomhide_hatchlingAI(Creature* creature) : ScriptedAI(creature) {}
 
-        void IsSummonedBy(Unit* summoner) override
+        void IsSummonedBy(WorldObject* summoner) override
         {
             if (summoner->GetTypeId() != TYPEID_PLAYER)
             {
@@ -2594,9 +2597,14 @@ public:
         events.ScheduleEvent(EVENT_FLAME_BREATH, 12s);
     }
 
-    void IsSummonedBy(Unit* summoner) override
+    void IsSummonedBy(WorldObject* summoner) override
     {
-        me->GetMotionMaster()->MoveFollow(summoner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+        if (summoner->GetTypeId() != TYPEID_UNIT)
+        {
+            return;
+        }
+
+        me->GetMotionMaster()->MoveFollow(summoner->ToUnit(), PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
     }
 
     void UpdateAI(uint32 diff) override
