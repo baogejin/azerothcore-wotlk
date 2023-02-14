@@ -579,7 +579,7 @@ public:
                 {
                     MountPhase = true;
                     events.Reset();
-                    damage = me->GetHealth() - 1;
+                    //damage = me->GetHealth() - 1;
                     me->SetReactState(REACT_PASSIVE);
                     me->RemoveAllAuras();
                     AddCreatureAddonAuras();

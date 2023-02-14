@@ -268,6 +268,25 @@ public:
 
         bool DoNeedCleanup(Player* ignoredPlayer = nullptr)
         {
+            if (InstanceProgress == INSTANCE_PROGRESS_ARGENT_SOLDIERS_DIED && ignoredPlayer != nullptr) {
+                //2号boss阶段特判
+                uint8 inCombatCnt = 0;
+                for (const auto& itr : instance->GetPlayers())
+                {
+                    if (Player* plr = itr.GetSource())
+                    {
+                        if (plr->IsAlive() && !plr->IsGameMaster() && plr->IsInCombat())
+                        {
+                            ++inCombatCnt;
+                        }
+                    }
+                }
+                if (inCombatCnt == 0)
+                {
+                    CLEANED = false;
+                    return true;
+                }
+            }
             uint8 aliveCount = 0;
             for (const auto &itr: instance->GetPlayers())
             {
