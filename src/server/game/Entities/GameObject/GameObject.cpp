@@ -1751,7 +1751,7 @@ void GameObject::Use(Unit* user)
 
                             //provide error, no fishable zone or area should be 0
                             if (!zone_skill)
-                                LOG_ERROR("sql.sql", "Fishable areaId {} are not properly defined in `skill_fishing_base_level`.", subzone);
+                                LOG_DEBUG("sql.sql", "Fishable areaId {} are not properly defined in `skill_fishing_base_level`.", subzone);
 
                             int32 skill = player->GetSkillValue(SKILL_FISHING);
 
