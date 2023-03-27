@@ -360,11 +360,11 @@ public:
                     DeathbringerSaurfangGUID = creature->GetGUID();
                     break;
                 case NPC_SE_HIGH_OVERLORD_SAURFANG:
-                    if (TeamIdInInstance == TEAM_ALLIANCE)
-                    {
-                        creature->UpdateEntry(NPC_SE_MURADIN_BRONZEBEARD, creature->GetCreatureData());
-                        creature->LoadEquipment();
-                    }
+                    //if (TeamIdInInstance == TEAM_ALLIANCE)
+                    //{
+                    //    creature->UpdateEntry(NPC_SE_MURADIN_BRONZEBEARD, creature->GetCreatureData());
+                    //    creature->LoadEquipment();
+                    //}
                     DeathbringerSaurfangEventGUID = creature->GetGUID();
                     creature->LastUsedScriptID = creature->GetScriptId();
                     break;
@@ -379,8 +379,8 @@ public:
                     }
                     break;
                 case NPC_SE_KOR_KRON_REAVER:
-                    if (TeamIdInInstance == TEAM_ALLIANCE)
-                        creature->UpdateEntry(NPC_SE_SKYBREAKER_MARINE);
+                    //if (TeamIdInInstance == TEAM_ALLIANCE)
+                    //    creature->UpdateEntry(NPC_SE_SKYBREAKER_MARINE);
                     break;
                 case NPC_FESTERGUT:
                     FestergutGUID = creature->GetGUID();
@@ -891,7 +891,8 @@ public:
             switch (type)
             {
                 case DATA_BUFF_AVAILABLE:
-                    return (IsBuffAvailable ? 1 : 0);
+                    //return (IsBuffAvailable ? 1 : 0);
+                    return 1;
                 case DATA_WEEKLY_QUEST_ID:
                     return WeeklyQuestId10;
                 case DATA_PUTRICIDE_TRAP_STATE:
