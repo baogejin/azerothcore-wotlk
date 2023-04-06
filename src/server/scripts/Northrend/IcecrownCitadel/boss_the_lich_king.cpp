@@ -660,6 +660,19 @@ public:
             SetEquipmentSlots(true);
             if (me->IsImmuneToPC())
                 me->SetStandState(UNIT_STAND_STATE_SIT);
+
+            FrozenThroneResetWorker reset;
+            Acore::GameObjectWorker<FrozenThroneResetWorker> worker(me, reset);
+            Cell::VisitGridObjects(me, worker, 333.0f);
+
+            //this->JustReachedHome();
+
+            //if (Creature* tirion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HIGHLORD_TIRION_FORDRING)))
+            //{
+            //    tirion->AI()->Reset();
+            //    tirion->AI()->JustReachedHome();
+            //}
+
         }
 
         void JustDied(Unit* /*killer*/) override
