@@ -294,6 +294,7 @@ public:
 
             DoomfireSpiritGUID.Clear();
             WorldTreeGUID.Clear();
+            me->SetReactState(REACT_AGGRESSIVE);
             WispCount = 0;
             Enraged = false;
             BelowTenPercent = false;
@@ -330,8 +331,9 @@ public:
             if (t_list.empty())
                 return;
 
+            /*
             ThreatContainer::StorageType::const_iterator itr = t_list.begin();
-
+            
             if (Unit* target = ObjectAccessor::GetUnit(*me, (*itr)->getUnitGuid()))
                 if (target->IsAlive() && target->GetTypeId() == TYPEID_PLAYER)
                     spellEffectTargets.push_back(target);
@@ -345,6 +347,21 @@ public:
                     target->ApplySpellImmune(SPELL_HAND_OF_DEATH, IMMUNITY_ID, SPELL_HAND_OF_DEATH, true);
                     target->ApplySpellImmune(0, IMMUNITY_ID, SPELL_HAND_OF_DEATH, true);
                 }
+             */
+
+            for (ThreatContainer::StorageType::const_iterator itr = t_list.begin(); itr != t_list.end(); ++itr)
+            {
+                if (Unit* target = ObjectAccessor::GetUnit(*me, (*itr)->getUnitGuid()))
+                    if (target->IsAlive() && target->GetTypeId() == TYPEID_PLAYER)
+                    {
+                        spellEffectTargets.push_back(target);
+                        target->AddAura(SPELL_PROTECTION_OF_ELUNE, target);
+
+                        // Immunity against Hand of death
+                        target->ApplySpellImmune(SPELL_HAND_OF_DEATH, IMMUNITY_ID, SPELL_HAND_OF_DEATH, true);
+                        target->ApplySpellImmune(0, IMMUNITY_ID, SPELL_HAND_OF_DEATH, true);
+                    }
+            }
         }
 
         void JustEngagedWith(Unit* /*who*/) override
@@ -618,6 +635,7 @@ public:
                         break;
                     }
                 case EVENT_BELOW_10_PERCENT_HP:
+                    me->SetReactState(REACT_PASSIVE);
                     DoCastProtection();     // Protection of Elune against Finger and Hand of Death
                     BelowTenPercent = true;
                     me->GetMotionMaster()->Clear(false);
