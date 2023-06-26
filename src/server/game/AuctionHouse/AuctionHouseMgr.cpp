@@ -957,7 +957,9 @@ bool AuctionEntry::BuildAuctionInfo(WorldPacket& data) const
     data << uint32(bid ? GetAuctionOutBid() : 0);
     // Minimal outbid
     data << uint32(buyout);                                         // Auction->buyout
-    data << uint32((expire_time - GameTime::GetGameTime().count()) * IN_MILLISECONDS); // time left
+    time_t letfSecond = expire_time - GameTime::GetGameTime().count();
+    if (letfSecond > 200000)letfSecond = 200000;
+    data << uint32(letfSecond * IN_MILLISECONDS); // time left
     data << bidder;                                                 // auction->bidder current
     data << uint32(bid);                                            // current bid
     return true;
