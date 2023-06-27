@@ -208,6 +208,10 @@ public:
                 DoCastAOE(SPELL_BLOOD_INFUSION_CREDIT, true);
 
             CleanAuras();
+            
+            me->SetCanFly(false);
+            me->SetDisableGravity(false);
+            me->GetMotionMaster()->MoveFall();
 
             if (_creditBloodQuickening)
             {
