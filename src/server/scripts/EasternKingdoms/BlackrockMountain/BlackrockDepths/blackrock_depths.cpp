@@ -32,6 +32,22 @@ enum IronhandData
     SPELL_GOUT_OF_FLAMES       = 15529
 };
 
+enum MarshalWindsor
+{
+    QUEST_JAIL_BREAK = 4322,
+
+    SAY_DUGHAL_FREE = -1230010,
+    SAY_WINDSOR_AGGRO1 = -1230011,
+    SAY_WINDSOR_AGGRO2 = -1230012,
+    SAY_WINDSOR_AGGRO3 = -1230013,
+    SAY_WINDSOR_1 = -1230014,
+    SAY_WINDSOR_4_1 = -1230015,
+    SAY_WINDSOR_4_2 = -1230016,
+    SAY_WINDSOR_4_3 = -1230017,
+    SAY_WINDSOR_6 = -1230018,
+    SAY_WINDSOR_9 = -1230019,
+};
+
 class go_shadowforge_brazier : public GameObjectScript
 {
 public:
@@ -702,6 +718,122 @@ public:
     };
 };
 
+class npc_marshal_windsor : public CreatureScript
+{
+public:
+    npc_marshal_windsor():CreatureScript("npc_marshal_windsor") { }
+
+    struct npc_marshal_windsorAI : public npc_escortAI
+    {
+        npc_marshal_windsorAI(Creature* creature) : npc_escortAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+        }
+        InstanceScript* instance;
+        void WaypointReached(uint32 waypointId) override
+        {
+            Player* pPlayer = GetPlayerForEscort();
+            if (!instance)// || m_pInstance->GetData(TYPE_QUEST_JAIL_BREAK) != IN_PROGRESS || !pPlayer)
+                return;
+
+            //m_uiWP = uiPointId;
+            switch (waypointId)
+            {
+            case 0:
+                me->SetFacingToObject(pPlayer);
+                break;
+            case 1:
+                Talk(1);
+                me->SetFacingToObject(pPlayer);
+                break;
+            case 7:
+                //if (!instance->GetData(GO_JAIL_DOOR_JAZ))
+                //{
+                    me->HandleEmoteCommand(EMOTE_STATE_POINT);
+                    Talk(2);
+                //}
+                //SetEscortPaused(true);
+                break;
+            case 8:
+                Talk(3);
+                break;
+            case 11:
+                //if (!m_pInstance->GetData(GO_JAIL_DOOR_SHILL))
+                //{
+                    me->HandleEmoteCommand(EMOTE_STATE_POINT);
+                    Talk(4);
+                //}
+                //SetEscortPaused(true);
+                break;
+            case 12:
+                Talk(5);
+                break;
+            case 13:
+                Talk(6);
+                break;
+            case 20:
+                //if (!m_pInstance->GetData(GO_JAIL_DOOR_CREST))
+                //{
+                    me->HandleEmoteCommand(EMOTE_STATE_POINT);
+                    Talk(7);
+                //}
+                //SetEscortPaused(true);
+                break;
+            case 21:
+                Talk(8);
+                break;
+            case 23:
+                {
+                    //if (!m_pInstance->GetData(GO_JAIL_DOOR_TOBIAS))
+                    //{
+                        me->HandleEmoteCommand(EMOTE_STATE_POINT);
+                        Talk(9);
+                    //}
+
+                    //if (Creature* pTobias = m_creature->FindNearestCreature(NPC_TOBIAS, 200.0f))
+                        //pTobias->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+
+                    //SetEscortPaused(true);                    
+                }
+                break;
+            case 24:
+                Talk(10);
+                break;
+            case 31:
+                Talk(11);
+                break;
+            case 57:
+                Talk(12);
+                
+                if (Player* pPlayer = GetPlayerForEscort())
+                    pPlayer->GroupEventHappens(QUEST_JAIL_BREAK, me);
+                
+                //m_pInstance->SetData(TYPE_QUEST_JAIL_BREAK, DONE);
+                break;
+            }
+        }
+    };
+
+    bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
+    {
+        if (quest->GetQuestId() == QUEST_JAIL_BREAK)
+        {
+            if (npc_escortAI* pEscortAI = CAST_AI(npc_marshal_windsor::npc_marshal_windsorAI, creature->AI()))
+                pEscortAI->Start(true, false, player->GetGUID());
+
+            creature->AI()->Talk(0);
+            creature->SetFaction(FACTION_ESCORTEE_N_NEUTRAL_PASSIVE);
+            creature->SetImmuneToPC(false);
+        }
+        return true;
+    }
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new npc_marshal_windsorAI(creature);
+    }
+};
+
 void AddSC_blackrock_depths()
 {
     new go_shadowforge_brazier();
@@ -711,4 +843,5 @@ void AddSC_blackrock_depths()
     new npc_lokhtos_darkbargainer();
     new npc_rocknot();
     new ironhand_guardian();
+    new npc_marshal_windsor();
 }
