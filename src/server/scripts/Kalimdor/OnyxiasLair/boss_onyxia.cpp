@@ -270,15 +270,15 @@ public:
     {
         if (whelpSpam)
         {
-            if (whelpCount < 40)
+            if (whelpCount < 20)
             {
                 whelpSpamTimer -= diff;
                 if (whelpSpamTimer <= 0)
                 {
                     float angle = rand_norm() * 2 * M_PI;
                     float dist  = rand_norm() * 4.0f;
-                    me->CastSpell(-33.18f + cos(angle) * dist, -258.80f + std::sin(angle) * dist, -89.0f, 17646, true);
-                    me->CastSpell(-32.535f + cos(angle) * dist, -170.190f + std::sin(angle) * dist, -89.0f, 17646, true);
+                    me->CastSpell(-33.18f + cos(angle) * dist, -258.80f + std::sin(angle) * dist, -89.0f, SPELL_SUMMON_WHELP, true);
+                    me->CastSpell(-32.535f + cos(angle) * dist, -170.190f + std::sin(angle) * dist, -89.0f, SPELL_SUMMON_WHELP, true);
                     whelpCount += 2;
                     whelpSpamTimer += 600;
                 }
@@ -387,7 +387,7 @@ public:
             }
             case EVENT_SUMMON_LAIR_GUARD:
             {
-                me->CastSpell(-101.654f, -214.491f, -80.70f, SPELL_SUMMON_LAIR_GUARD, true);
+                //me->CastSpell(-101.654f, -214.491f, -80.70f, SPELL_SUMMON_LAIR_GUARD, true); //60好像没有中龙
                 events.RepeatEvent(30000);
                 break;
             }
@@ -519,8 +519,8 @@ public:
             {
                 float angle = rand_norm() * 2 * M_PI;
                 float dist  = rand_norm() * 4.0f;
-                me->CastSpell(-33.18f + cos(angle) * dist, -258.80f + std::sin(angle) * dist, -89.0f, 17646, true);
-                me->CastSpell(-32.535f + cos(angle) * dist, -170.190f + std::sin(angle) * dist, -89.0f, 17646, true);
+                me->CastSpell(-33.18f + cos(angle) * dist, -258.80f + std::sin(angle) * dist, -89.0f, SPELL_SUMMON_WHELP, true);
+                me->CastSpell(-32.535f + cos(angle) * dist, -170.190f + std::sin(angle) * dist, -89.0f, SPELL_SUMMON_WHELP, true);
                 events.RepeatEvent(30000);
                 break;
             }
