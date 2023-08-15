@@ -20,6 +20,7 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "TaskScheduler.h"
+#include "GameObjectAI.h"
 
 enum Texts
 {
@@ -264,6 +265,64 @@ private:
     TaskScheduler _scheduler;
 };
 
+class go_mc_rune : public GameObjectScript
+{
+public:
+    go_mc_rune():GameObjectScript("go_mc_rune") { }
+
+    struct go_mc_runeAI : public GameObjectAI
+    {
+        go_mc_runeAI(GameObject* go) : GameObjectAI(go)
+        {
+        }
+
+        bool GossipHello(Player* player, bool  /*reportUse*/) override
+        {
+            if (auto instance = me->GetInstanceScript())
+            {
+                for (uint8 i = 0; i < MAX_MC_LINKED_BOSS_OBJ; ++i)
+                {
+                    if (me->GetGOInfo()->entry == linkedBossObjData[i].runeId)
+                    {
+                        if (instance->GetBossState(linkedBossObjData[i].bossId) != DONE)
+                        {
+                            return false;
+                        }
+                        if (instance->GetData(linkedBossObjData[i].bossId + 11))
+                        {
+                            return false;
+                        }
+                        if (!player->HasItemCount(22754, 1)) { //永恒精萃
+                            if (player->HasItemCount(17333, 1))//水之精萃
+                            {
+                                player->DestroyItemCount(17333, 1, true);
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        //灭火
+                        me->UseDoorOrButton(WEEK * IN_MILLISECONDS);
+                        instance->SetData(linkedBossObjData[i].bossId + 11, 1);
+                        if (auto link = me->GetLinkedTrap())
+                        {
+                            link->DespawnOrUnsummon(0ms, Seconds(WEEK));
+                        }
+
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    };
+    GameObjectAI* GetAI(GameObject* go) const override
+    {
+        return new go_mc_runeAI(go);
+    }
+};
+
 void AddSC_molten_core()
 {
     // Creatures
@@ -272,4 +331,6 @@ void AddSC_molten_core()
 
     // Spells
     new spell_mc_play_dead();
+
+    new go_mc_rune();
 }

@@ -43,6 +43,14 @@ enum MCData
     // Other data
     DATA_LAVA_STEAM                 = 10,
     DATA_LAVA_SPLASH                = 11,
+
+    DATA_RUNE_KRESS = 12,   // Magmadar
+    DATA_RUNE_MOHN = 13,   // Gehennas
+    DATA_RUNE_BLAZ = 14,   // Garr
+    DATA_RUNE_MAZJ = 15,   // Shazzrah
+    DATA_RUNE_ZETH = 16,   // Geddon
+    DATA_RUNE_KORO = 17,   // Sulfuron
+    DATA_RUNE_THERI = 18,   // Golemagg
 };
 
 enum MCActions
@@ -117,6 +125,25 @@ enum MCGameObjects
 enum MCSpells
 {
     SPELL_CORE_RAGER_QUIET_SUICIDE  = 3617,     // Server side
+};
+
+struct MCBossObject
+{
+    uint32 bossId;
+    uint32 runeId;
+    uint32 circleId;
+};
+
+constexpr uint8 MAX_MC_LINKED_BOSS_OBJ = 7;
+MCBossObject const linkedBossObjData[MAX_MC_LINKED_BOSS_OBJ] =
+{
+    { DATA_MAGMADAR,    GO_RUNE_KRESS,      GO_CIRCLE_MAGMADAR  },
+    { DATA_GEHENNAS,    GO_RUNE_MOHN,       GO_CIRCLE_GEHENNAS  },
+    { DATA_GARR,        GO_RUNE_BLAZ,       GO_CIRCLE_GARR      },
+    { DATA_SHAZZRAH,    GO_RUNE_MAZJ,       GO_CIRCLE_SHAZZRAH  },
+    { DATA_GEDDON,      GO_RUNE_ZETH,       GO_CIRCLE_GEDDON    },
+    { DATA_GOLEMAGG,    GO_RUNE_THERI,      GO_CIRCLE_GOLEMAGG  },
+    { DATA_SULFURON,    GO_RUNE_KORO,       GO_CIRCLE_SULFURON  },
 };
 
 extern Position const MajordomoRagnaros;        // Teleport location to Ragnaros summons area

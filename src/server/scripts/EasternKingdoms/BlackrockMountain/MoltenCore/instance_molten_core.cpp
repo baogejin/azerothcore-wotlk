@@ -32,25 +32,6 @@ MinionData const minionData[] =
     { 0, 0 } // END
 };
 
-struct MCBossObject
-{
-    uint32 bossId;
-    uint32 runeId;
-    uint32 circleId;
-};
-
-constexpr uint8 MAX_MC_LINKED_BOSS_OBJ = 7;
-MCBossObject const linkedBossObjData[MAX_MC_LINKED_BOSS_OBJ]=
-{
-    { DATA_MAGMADAR,    GO_RUNE_KRESS,      GO_CIRCLE_MAGMADAR  },
-    { DATA_GEHENNAS,    GO_RUNE_MOHN,       GO_CIRCLE_GEHENNAS  },
-    { DATA_GARR,        GO_RUNE_BLAZ,       GO_CIRCLE_GARR      },
-    { DATA_SHAZZRAH,    GO_RUNE_MAZJ,       GO_CIRCLE_SHAZZRAH  },
-    { DATA_GEDDON,      GO_RUNE_ZETH,       GO_CIRCLE_GEDDON    },
-    { DATA_GOLEMAGG,    GO_RUNE_THERI,      GO_CIRCLE_GOLEMAGG  },
-    { DATA_SULFURON,    GO_RUNE_KORO,       GO_CIRCLE_SULFURON  },
-};
-
 constexpr uint8 SAY_SPAWN = 1;
 
 class instance_molten_core : public InstanceMapScript
@@ -65,6 +46,23 @@ public:
             SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
             LoadMinionData(minionData);
+        }
+
+        uint32 m_uiRuneState;
+
+        void Initialize() override
+        {
+            memset(&m_uiRuneState, 0, sizeof(m_uiRuneState));
+        }
+
+        void ReadSaveDataMore(std::istringstream& data) override
+        {
+            data >> m_uiRuneState;
+        }
+
+        void WriteSaveDataMore(std::ostringstream& data) override
+        {
+            data << m_uiRuneState;
         }
 
         void OnPlayerEnter(Player* /*player*/) override
@@ -162,7 +160,7 @@ public:
                             continue;
                         }
 
-                        if (GetBossState(linkedBossObjData[i].bossId) == DONE)
+                        if (GetData(linkedBossObjData[i].bossId + 11))
                         {
                             go->DespawnOrUnsummon(0ms, Seconds(WEEK));
                         }
@@ -189,9 +187,13 @@ public:
                             continue;
                         }
 
-                        if (GetBossState(linkedBossObjData[i].bossId) == DONE)
+                        if (GetData(linkedBossObjData[i].bossId + 11))
                         {
                             go->UseDoorOrButton(WEEK * IN_MILLISECONDS);
+                            if (auto link = go->GetLinkedTrap())
+                            {
+                                link->DespawnOrUnsummon(0ms, Seconds(WEEK));
+                            }
                         }
                         else
                         {
@@ -311,6 +313,7 @@ public:
                 }
             }
             // Perform needed checks for Majordomu
+            /*
             if (bossId < DATA_MAJORDOMO_EXECUTUS && state == DONE)
             {
                 if (GameObject* circle = instance->GetGameObject(_circlesGUIDs[bossId]))
@@ -329,9 +332,38 @@ public:
                 {
                     SummonMajordomoExecutus();
                 }
-            }
+            }*/
 
             return true;
+        }
+
+        void SetData(uint32 DataId, uint32 Value) override
+        {
+            if (Value)
+            {
+                m_uiRuneState |= (1 << DataId);
+            }
+            else
+            {
+                m_uiRuneState &= (~(1 << DataId));
+            }
+            
+            if (CheckMajordomoExecutus())
+            {
+                SummonMajordomoExecutus();
+            }
+            OUT_SAVE_INST_DATA;
+            SaveToDB();
+            OUT_SAVE_INST_DATA_COMPLETE;
+        }
+
+        uint32 GetData(uint32 type) const override
+        {
+            if (m_uiRuneState & (1 << type))
+            {
+                return 1;
+            }
+            return 0;
         }
 
         void DoAction(int32 action) override
@@ -383,14 +415,9 @@ public:
                 return false;
             }
 
-            for (uint8 i = 0; i < DATA_MAJORDOMO_EXECUTUS; ++i)
+            for (uint8 i = DATA_RUNE_KRESS; i <= DATA_RUNE_THERI; ++i)
             {
-                if (i == DATA_LUCIFRON)
-                {
-                    continue;
-                }
-
-                if (GetBossState(i) != DONE)
+                if (!GetData(i))
                 {
                     return false;
                 }
