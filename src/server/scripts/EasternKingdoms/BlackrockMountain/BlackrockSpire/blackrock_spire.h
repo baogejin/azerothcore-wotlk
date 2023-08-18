@@ -140,7 +140,9 @@ enum GameObjectsIds
     // Urok Doomhowl
     GO_UROK_PILE                    = 175621,
     GO_UROK_CHALLENGE               = 175584,
-    GO_UROK_CIRCLE                  = 175571
+    GO_UROK_CIRCLE                  = 175571,
+
+    GO_UP_DOOR                      = 164725,
 };
 
 enum npcspells

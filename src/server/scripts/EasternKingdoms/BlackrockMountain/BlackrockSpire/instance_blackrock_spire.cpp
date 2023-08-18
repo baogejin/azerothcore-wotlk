@@ -283,6 +283,10 @@ public:
                 case GO_UROK_CHALLENGE:
                     go_urokChallenge = go->GetGUID();
                     break;
+                case GO_UP_DOOR:
+                    if (GetBossState(DATA_PYROGAURD_EMBERSEER) == DONE)
+                        HandleGameObject(ObjectGuid::Empty, true, go);
+                    break;
                 default:
                     break;
             }
@@ -864,12 +868,20 @@ class spell_blackrock_spire_call_of_vaelastrasz : public SpellScript
         {
             if (InstanceScript* instance = caster->GetInstanceScript())
             {
-                instance->SetData(DATA_VAELASTRASZ, IN_PROGRESS);
-                float distanceToNorthSpawn = caster->GetDistance2d(VaelastraszTheRedPosNorth.m_positionX, VaelastraszTheRedPosNorth.m_positionY);
-                float distanceToSouthSpawn = caster->GetDistance2d(VaelastraszTheRedPosSouth.m_positionX, VaelastraszTheRedPosSouth.m_positionY);
-                Position spawnPosition = distanceToNorthSpawn < distanceToSouthSpawn ? VaelastraszTheRedPosNorth : VaelastraszTheRedPosSouth;
-                // despawn is called by the CreatureAI
-                caster->SummonCreature(NPC_VAELASTRASZ_THE_RED, spawnPosition, TEMPSUMMON_TIMED_DESPAWN, 60 * IN_MILLISECONDS);
+                if (auto go = caster->FindNearestGameObject(GO_UP_DOOR, 5.0f))
+                {
+                    if (go->getLootState() == GO_READY)
+                    {
+                        go->UseDoorOrButton(WEEK * IN_MILLISECONDS);
+                        instance->SetData(DATA_VAELASTRASZ, IN_PROGRESS);
+                        float distanceToNorthSpawn = caster->GetDistance2d(VaelastraszTheRedPosNorth.m_positionX, VaelastraszTheRedPosNorth.m_positionY);
+                        float distanceToSouthSpawn = caster->GetDistance2d(VaelastraszTheRedPosSouth.m_positionX, VaelastraszTheRedPosSouth.m_positionY);
+                        Position spawnPosition = distanceToNorthSpawn < distanceToSouthSpawn ? VaelastraszTheRedPosNorth : VaelastraszTheRedPosSouth;
+                        // despawn is called by the CreatureAI
+                        caster->SummonCreature(NPC_VAELASTRASZ_THE_RED, spawnPosition, TEMPSUMMON_TIMED_DESPAWN, 60 * IN_MILLISECONDS);
+                    }
+                }
+                
             }
         }
     }
