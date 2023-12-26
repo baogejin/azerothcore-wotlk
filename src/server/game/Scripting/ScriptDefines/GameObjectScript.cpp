@@ -112,7 +112,7 @@ bool ScriptMgr::OnQuestReward(Player* player, GameObject* go, Quest const* quest
 
     if (ret && *ret)
     {
-        return false;
+        return true;
     }
 
     auto tempScript = ScriptRegistry<GameObjectScript>::GetScriptById(go->GetScriptId());
