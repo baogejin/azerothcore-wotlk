@@ -75,7 +75,7 @@ int m_ServiceStatus = -1;
 #endif
 
 #ifndef _ACORE_CORE_CONFIG
-#define _ACORE_CORE_CONFIG "worldserver.conf"
+#define _ACORE_CORE_CONFIG "worldserver_classic.conf"
 #endif
 
 #define WORLD_SLEEP_CONST 10
